@@ -1,0 +1,79 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <user-card name="chris" role="admin"></user-card>
+    <div id="name-action-container" style="display: flex; column-gap: 5px">
+      <input type="text" id="name" />
+      <button id="name-change-btn">이름 변경</button>
+    </div>
+    <button id="toggle-btn">정보 토글</button>
+
+    <script>
+      class UserCard extends HTMLElement {
+        static observedAttributes = ["name", "role"];
+
+        constructor() {
+          super();
+          console.log("생성자 호출");
+        }
+
+        connectedCallback() {
+          console.log("DOM에 추가됨");
+          this.render();
+        }
+
+        disconnectedCallback() {
+          console.log("DOM에서 제거됨");
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+          console.log(`속성: ${name}: ${oldValue} → ${newValue}`);
+          if (oldValue !== newValue) {
+            this.render();
+          }
+        }
+
+        render() {
+          const name = this.getAttribute("name") || "이름 없음";
+          const role = this.getAttribute("role") || "역할 없음";
+
+          this.innerHTML = `
+                <div>
+                    <h2>${name}</h2>    
+                    <p>역할: ${role}</p>
+                </div>
+            `;
+        }
+      }
+
+      customElements.define("user-card", UserCard);
+
+      const nameChangeBtn = document.querySelector("#name-change-btn");
+      const nameInput = document.querySelector("#name");
+      const card = document.querySelector("user-card");
+
+      nameChangeBtn.addEventListener("click", () => {
+        if (!card.isConnected) return;
+        card.setAttribute("name", nameInput.value);
+      });
+
+      const toggleBtn = document.querySelector("#toggle-btn");
+
+      toggleBtn.addEventListener("click", () => {
+        const nameActionContainer = document.querySelector(
+          "#name-action-container"
+        );
+
+        if (card.isConnected) {
+          card.remove();
+        } else {
+          nameActionContainer.before(card);
+        }
+      });
+    </script>
+  </body>
+</html>
