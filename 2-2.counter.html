@@ -1,0 +1,41 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <counter-button initial="10"></counter-button>
+
+    <script>
+      class CounterButton extends HTMLElement {
+        static observedAttributes = ["initial"];
+
+        constructor() {
+          super();
+          this.count = parseInt(this.getAttribute("initial")) || 0;
+          this.innerHTML = `<button></button>`;
+          this.button = this.querySelector("button");
+        }
+
+        connectedCallback() {
+          this.render();
+          this.button.addEventListener("click", () => {
+            this.count++;
+            this.render();
+          });
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+          console.log(`${name}: ${oldValue} → ${newValue}`);
+        }
+
+        render() {
+          this.button.textContent = String(this.count);
+        }
+      }
+
+      customElements.define("counter-button", CounterButton);
+    </script>
+  </body>
+</html>
